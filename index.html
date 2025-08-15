@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能实时工资计算器（午休版）</title>
+  <style>
+    body {
+      background: #222;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 20px;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    input {
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background: #4caf50;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .clock {
+      font-size: 40px;
+    }
+    .money {
+      font-size: 50px;
+      font-weight: bold;
+      color: #00ff7f;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="input-group">
+    <label>每月工资（元）：<input type="number" id="monthlyWage" placeholder="如 6000"></label>
+    <label>每月上班天数：<input type="number" id="workDays" placeholder="如 22"></label>
+    <label>上班开始时间：<input type="time" id="startTime" value="09:00"></label>
+    <label>下班结束时间：<input type="time" id="endTime" value="18:00"></label>
+    <label>午休开始时间：<input type="time" id="lunchStart" value="12:00"></label>
+    <label>午休结束时间：<input type="time" id="lunchEnd" value="13:00"></label>
+    <button onclick="startWork()">开始计算</button>
+  </div>
+
+  <div class="clock" id="clock">当前时间：00:00:00</div>
+  <div class="money" id="money">今日已赚：¥0.00</div>
+
+  <script>
+    let timer = null;
+    let dailyWage = 0;
+    let startSeconds = 0;
+    let endSeconds = 0;
+    let lunchStartSec = 0;
+    let lunchEndSec = 0;
+    let totalWorkSeconds = 0;
+
+    function updateClockAndMoney() {
+      const now = new Date();
+      let h = String(now.getHours()).padStart(2, '0');
+      let m = String(now.getMinutes()).padStart(2, '0');
+      let s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clock').textContent = `当前时间：${h}:${m}:${s}`;
+
+      let currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+      // 还没上班
+      if (currentSeconds < startSeconds) {
+        document.getElementById('money').textContent = `今日已赚：¥0.00`;
+        return;
+      }
+
+      // 已下班
+      if (currentSeconds >= endSeconds) {
+        document.getElementById('money').textContent = `今日已赚：¥${dailyWage.toFixed(2)} (已下班)`;
+        return;
+      }
+
+      // 在午休
+      if (currentSeconds >= lunchStartSec && currentSeconds < lunchEndSec) {
+        document.getElementById('money').textContent = `今日已赚：¥${calcEarned(lunchStartSec).toFixed(2)} (午休中)`;
+        return;
+      }
+
+      // 正常上班中
+      document.getElementById('money').textContent = `今日已赚：¥${calcEarned(currentSeconds).toFixed(2)}`;
+    }
+
+    function calcEarned(currentSec) {
+      // 已工作秒数（扣午休）
+      let workedSec = 0;
+
+      if (currentSec <= lunchStartSec) {
+        workedSec = currentSec - startSeconds;
+      } else if (currentSec >= lunchEndSec) {
+        workedSec = (lunchStartSec - startSeconds) + (currentSec - lunchEndSec);
+      }
+
+      return (workedSec / totalWorkSeconds) * dailyWage;
+    }
+
+    function startWork() {
+      const monthlyWage = parseFloat(document.getElementById('monthlyWage').value);
+      const workDays = parseInt(document.getElementById('workDays').value);
+      const startTimeStr = document.getElementById('startTime').value;
+      const endTimeStr = document.getElementById('endTime').value;
+      const lunchStartStr = document.getElementById('lunchStart').value;
+      const lunchEndStr = document.getElementById('lunchEnd').value;
+
+      if (isNaN(monthlyWage) || isNaN(workDays) || workDays <= 0 || monthlyWage <= 0) {
+        alert("请输入正确的工资和工作天数！");
+        return;
+      }
+
+      // 每天工资
+      dailyWage = monthlyWage / workDays;
+
+      // 转成秒
+      const [startH, startM] = startTimeStr.split(':').map(Number);
+      const [endH, endM] = endTimeStr.split(':').map(Number);
+      const [lunchSH, lunchSM] = lunchStartStr.split(':').map(Number);
+      const [lunchEH, lunchEM] = lunchEndStr.split(':').map(Number);
+
+      startSeconds = startH * 3600 + startM * 60;
+      endSeconds = endH * 3600 + endM * 60;
+      lunchStartSec = lunchSH * 3600 + lunchSM * 60;
+      lunchEndSec = lunchEH * 3600 + lunchEM * 60;
+
+      if (endSeconds <= startSeconds) {
+        alert("下班时间必须大于上班时间！");
+        return;
+      }
+      if (lunchEndSec <= lunchStartSec) {
+        alert("午休结束时间必须大于午休开始时间！");
+        return;
+      }
+
+      // 计算总有效工作秒数
+      totalWorkSeconds = (endSeconds - startSeconds) - (lunchEndSec - lunchStartSec);
+
+      if (timer) clearInterval(timer);
+      timer = setInterval(updateClockAndMoney, 1000);
+      updateClockAndMoney();
+    }
+
+    // 初始化时钟
+    setInterval(() => {
+      if (!timer) {
+        const now = new Date();
+        let h = String(now.getHours()).padStart(2, '0');
+        let m = String(now.getMinutes()).padStart(2, '0');
+        let s = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('clock').textContent = `当前时间：${h}:${m}:${s}`;
+      }
+    }, 1000);
+  </script>
+
+</body>
+</html>
