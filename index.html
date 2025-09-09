@@ -1,177 +1,250 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>智能实时工资计算器（午休版）</title>
-  <style>
-    body {
-      background: #222;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      gap: 20px;
-    }
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    input {
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-      font-size: 16px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      background: #4caf50;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #45a049;
-    }
-    .clock {
-      font-size: 40px;
-    }
-    .money {
-      font-size: 50px;
-      font-weight: bold;
-      color: #00ff7f;
-    }
-  </style>
+  <title>Document</title>
 </head>
 <body>
-
-  <div class="input-group">
-    <label>每月工资（元）：<input type="number" id="monthlyWage" placeholder="如 6000"></label>
-    <label>每月上班天数：<input type="number" id="workDays" placeholder="如 22"></label>
-    <label>上班开始时间：<input type="time" id="startTime" value="09:00"></label>
-    <label>下班结束时间：<input type="time" id="endTime" value="18:00"></label>
-    <label>午休开始时间：<input type="time" id="lunchStart" value="12:00"></label>
-    <label>午休结束时间：<input type="time" id="lunchEnd" value="13:00"></label>
-    <button onclick="startWork()">开始计算</button>
-  </div>
-
-  <div class="clock" id="clock">当前时间：00:00:00</div>
-  <div class="money" id="money">今日已赚：¥0.00</div>
-
-  <script>
-    let timer = null;
-    let dailyWage = 0;
-    let startSeconds = 0;
-    let endSeconds = 0;
-    let lunchStartSec = 0;
-    let lunchEndSec = 0;
-    let totalWorkSeconds = 0;
-
-    function updateClockAndMoney() {
-      const now = new Date();
-      let h = String(now.getHours()).padStart(2, '0');
-      let m = String(now.getMinutes()).padStart(2, '0');
-      let s = String(now.getSeconds()).padStart(2, '0');
-      document.getElementById('clock').textContent = `当前时间：${h}:${m}:${s}`;
-
-      let currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-
-      // 还没上班
-      if (currentSeconds < startSeconds) {
-        document.getElementById('money').textContent = `今日已赚：¥0.00`;
-        return;
+  <style>
+      body {
+        max-width: 1480px;
+        margin: 0 auto;
       }
 
-      // 已下班
-      if (currentSeconds >= endSeconds) {
-        document.getElementById('money').textContent = `今日已赚：¥${dailyWage.toFixed(2)} (已下班)`;
-        return;
+      .tab-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .inner-tab-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
       }
 
-      // 在午休
-      if (currentSeconds >= lunchStartSec && currentSeconds < lunchEndSec) {
-        document.getElementById('money').textContent = `今日已赚：¥${calcEarned(lunchStartSec).toFixed(2)} (午休中)`;
-        return;
+      button {
+        padding: 8px 14px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        background-color: #fff;
+        border: 1px solid #000000;
+        /* background: #f0f0f0; */
       }
 
-      // 正常上班中
-      document.getElementById('money').textContent = `今日已赚：¥${calcEarned(currentSeconds).toFixed(2)}`;
-    }
-
-    function calcEarned(currentSec) {
-      // 已工作秒数（扣午休）
-      let workedSec = 0;
-
-      if (currentSec <= lunchStartSec) {
-        workedSec = currentSec - startSeconds;
-      } else if (currentSec >= lunchEndSec) {
-        workedSec = (lunchStartSec - startSeconds) + (currentSec - lunchEndSec);
+      button.active {
+        background: #000000;
+        color: #fff;
       }
 
-      return (workedSec / totalWorkSeconds) * dailyWage;
-    }
-
-    function startWork() {
-      const monthlyWage = parseFloat(document.getElementById('monthlyWage').value);
-      const workDays = parseInt(document.getElementById('workDays').value);
-      const startTimeStr = document.getElementById('startTime').value;
-      const endTimeStr = document.getElementById('endTime').value;
-      const lunchStartStr = document.getElementById('lunchStart').value;
-      const lunchEndStr = document.getElementById('lunchEnd').value;
-
-      if (isNaN(monthlyWage) || isNaN(workDays) || workDays <= 0 || monthlyWage <= 0) {
-        alert("请输入正确的工资和工作天数！");
-        return;
+      .tab-panel{
+        display: none;
+      }
+      .inner-tab-panel {
+        display: none;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .tab-panel.active,
+      .inner-tab-panel.active {
+        display: block;
       }
 
-      // 每天工资
-      dailyWage = monthlyWage / workDays;
-
-      // 转成秒
-      const [startH, startM] = startTimeStr.split(':').map(Number);
-      const [endH, endM] = endTimeStr.split(':').map(Number);
-      const [lunchSH, lunchSM] = lunchStartStr.split(':').map(Number);
-      const [lunchEH, lunchEM] = lunchEndStr.split(':').map(Number);
-
-      startSeconds = startH * 3600 + startM * 60;
-      endSeconds = endH * 3600 + endM * 60;
-      lunchStartSec = lunchSH * 3600 + lunchSM * 60;
-      lunchEndSec = lunchEH * 3600 + lunchEM * 60;
-
-      if (endSeconds <= startSeconds) {
-        alert("下班时间必须大于上班时间！");
-        return;
-      }
-      if (lunchEndSec <= lunchStartSec) {
-        alert("午休结束时间必须大于午休开始时间！");
-        return;
+      .inner-tab-panel img {
+        max-width: 100%;
       }
 
-      // 计算总有效工作秒数
-      totalWorkSeconds = (endSeconds - startSeconds) - (lunchEndSec - lunchStartSec);
+      @media only screen and (max-width: 799px) {
+        .tab-buttons {
+          gap: 5px;
+          justify-content: flex-start;
 
-      if (timer) clearInterval(timer);
-      timer = setInterval(updateClockAndMoney, 1000);
-      updateClockAndMoney();
-    }
-
-    // 初始化时钟
-    setInterval(() => {
-      if (!timer) {
-        const now = new Date();
-        let h = String(now.getHours()).padStart(2, '0');
-        let m = String(now.getMinutes()).padStart(2, '0');
-        let s = String(now.getSeconds()).padStart(2, '0');
-        document.getElementById('clock').textContent = `当前时间：${h}:${m}:${s}`;
+        }
+        .inner-tab-buttons {
+          gap: 5px;
+        }
+        button {
+          padding: 6px 7px;
+          font-size: 12px;
+        }
       }
-    }, 1000);
-  </script>
+    </style>
+  </head>
+  <body>
+    <div class="tab-buttons" id="outer-tabs"></div>
+    <div id="outer-tab-panels"></div>
 
+    <script>
+      const tabData = [
+        {
+          label: "Reversible Basketball",
+          images: {
+            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-cm-size.jpg?v=1753435751",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-in-size.jpg?v=1753663994",
+          },
+        },
+        {
+          label: "Stitched Basketball",
+          images: {
+            CM: "",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/stitched-basketball-in.png?v=1757381991",
+          },
+        },
+        {
+          label: "Basketball",
+          images: {
+            CM: "",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-jersey-in.png?v=1757381990",
+          },
+        },
+        {
+          label: "Basketball Sequined Dress",
+          images: {
+            CM: "",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-sequined-dress-in.png?v=1757381991",
+          },
+        },
+        {
+          label: "Baseball",
+          images: {
+            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-cm-size.jpg?v=1753435755",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-in-size.jpg?v=1753663994",
+          },
+        },
+        {
+          label: "football",
+          images: { 
+            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/football-cm-size.jpg?v=1753435754",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/football-in-size.jpg?v=1753663994",
+          },
+        },
+        {
+          label: "Hockey",
+          images: {
+            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/hockey-cm-size.jpg?v=1753435754",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/hockey-in-size.jpg?v=1753663994",
+          },
+        },
+        {
+          label: "soccer",
+          images: {
+            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/soccer-cm-size.jpg?v=1753435754",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/soccer-in-size.jpg?v=1753663994",
+          },
+        },
+        {
+          label: "Jacket",
+          images: {
+            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/jacket-cm-size.jpg?v=1753435754",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/jacket-in-size.jpg?v=1753664000",
+          },
+        },
+        {
+          label: "Waterproof Jacket",
+          images: {
+            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/waterproof-cm-size.jpg?v=1753435751",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/waterproof-in-size.jpg?v=1753663994",
+          },
+        },
+        {
+          label: "T-Shirt",
+          images: {
+            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/t-shirt-cm-size.jpg?v=1753435754",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/T-shirt-in-size.jpg?v=1753663994",
+          },
+        },
+        {
+          label: "Basketball Shorts",
+          images: {
+            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-pants-cm-size.jpg?v=1753435754",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-short-in-size.jpg?v=1753663994",
+          },
+        },
+        {
+          label: "Baseball Pants",
+          images: {
+            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-pant-cm-size.jpg?v=1753435754",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-pants-in-size.jpg?v=1753663994",
+          },
+        },
+        {
+          label: "Pet",
+          images: {
+            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/pet-cm-size.jpg?v=1753435753",
+            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/pet-in-size.jpg?v=1753663994",
+          },
+        },
+        
+      ];
+
+      const outerTabsContainer = document.getElementById("outer-tabs");
+      const outerPanelsContainer = document.getElementById("outer-tab-panels");
+
+      tabData.forEach((tab, tabIndex) => {
+        // 创建 outer tab button
+        const outerBtn = document.createElement("button");
+        outerBtn.textContent = tab.label;
+        if (tabIndex === 0) outerBtn.classList.add("active");
+        outerTabsContainer.appendChild(outerBtn);
+
+        // 创建 outer panel
+        const outerPanel = document.createElement("div");
+        outerPanel.classList.add("tab-panel");
+        if (tabIndex === 0) outerPanel.classList.add("active");
+
+        // 内层 tab buttons
+        const innerBtnWrap = document.createElement("div");
+        innerBtnWrap.className = "inner-tab-buttons";
+        innerBtnWrap.style.flexDirection = "row-reverse";
+
+        const units = ["CM", "IN"];
+        const innerPanels = [];
+
+        units.forEach((unit, idx) => {
+          const innerBtn = document.createElement("button");
+          innerBtn.className = "but-tab";
+          innerBtn.textContent = unit;
+          if (idx === 1) innerBtn.classList.add("active");
+          innerBtnWrap.appendChild(innerBtn);
+
+          const innerPanel = document.createElement("div");
+          innerPanel.className = "inner-tab-panel";
+          if (idx === 1) innerPanel.classList.add("active");
+          const img = document.createElement("img");
+          img.src = tab.images[unit];
+          innerPanel.appendChild(img);
+          innerPanels.push(innerPanel);
+
+          innerBtn.addEventListener("click", () => {
+            innerBtnWrap
+              .querySelectorAll("button")
+              .forEach((b) => b.classList.remove("active"));
+            innerPanels.forEach((p) => p.classList.remove("active"));
+            innerBtn.classList.add("active");
+            innerPanel.classList.add("active");
+          });
+        });
+
+        outerPanel.appendChild(innerBtnWrap);
+        innerPanels.forEach((p) => outerPanel.appendChild(p));
+        outerPanelsContainer.appendChild(outerPanel);
+
+        // 外层 tab 切换逻辑
+        outerBtn.addEventListener("click", () => {
+          outerTabsContainer
+            .querySelectorAll("button")
+            .forEach((b) => b.classList.remove("active"));
+          outerPanelsContainer
+            .querySelectorAll(".tab-panel")
+            .forEach((p) => p.classList.remove("active"));
+          outerBtn.classList.add("active");
+          outerPanel.classList.add("active");
+        });
+      });
+    </script>
 </body>
 </html>
