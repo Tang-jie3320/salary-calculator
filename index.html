@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-</head>
-<body>
   <style>
       body {
         max-width: 1480px;
@@ -33,7 +31,16 @@
         border-radius: 4px;
         background-color: #fff;
         border: 1px solid #000000;
-        /* background: #f0f0f0; */
+      }
+     .tab-buttons button {
+        max-width: 120px;
+        height: 50px;
+        padding: 0 10px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        background-color: #fff;
+        border: 1px solid #000000;
       }
 
       button.active {
@@ -62,7 +69,6 @@
         .tab-buttons {
           gap: 5px;
           justify-content: flex-start;
-
         }
         .inner-tab-buttons {
           gap: 5px;
@@ -73,178 +79,186 @@
         }
       }
     </style>
-  </head>
-  <body>
-    <div class="tab-buttons" id="outer-tabs"></div>
-    <div id="outer-tab-panels"></div>
+</head>
+<body>
+  <div class="tab-buttons" id="outer-tabs"></div>
+  <div id="outer-tab-panels"></div>
 
-    <script>
-      const tabData = [
-        {
-          label: "Reversible Basketball",
-          images: {
-            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-cm-size.jpg?v=1753435751",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-in-size.jpg?v=1753663994",
-          },
+  <script>
+    const tabData = [
+      {
+        label: "Reversible Basketball",
+        images: {
+          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-cm-size.jpg?v=1753435751",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-in-size.jpg?v=1753663994",
         },
-        {
-          label: "Stitched Basketball",
-          images: {
-            CM: "",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/stitched-basketball-in.png?v=1757381991",
-          },
+      },
+      {
+        label: "Stitched Basketball",
+        images: {
+          CM: "",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/stitched-basketball-in.png?v=1757381991",
         },
-        {
-          label: "Basketball",
-          images: {
-            CM: "",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-jersey-in.png?v=1757381990",
-          },
+      },
+      {
+        label: "Basketball",
+        images: {
+          CM: "",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-jersey-in.png?v=1757381990",
         },
-        {
-          label: "Basketball Sequined Dress",
-          images: {
-            CM: "",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-sequined-dress-in.png?v=1757381991",
-          },
+      },
+      {
+        label: "Basketball Sequined Dress",
+        images: {
+          CM: "",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-sequined-dress-in.png?v=1757381991",
         },
-        {
-          label: "Baseball",
-          images: {
-            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-cm-size.jpg?v=1753435755",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-in-size.jpg?v=1753663994",
-          },
+      },
+      {
+        label: "Baseball",
+        images: {
+          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-cm-size.jpg?v=1753435755",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-in-size.jpg?v=1753663994",
         },
-        {
-          label: "football",
-          images: { 
-            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/football-cm-size.jpg?v=1753435754",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/football-in-size.jpg?v=1753663994",
-          },
+      },
+      {
+        label: "football",
+        images: { 
+          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/football-cm-size.jpg?v=1753435754",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/football-in-size.jpg?v=1753663994",
         },
-        {
-          label: "Hockey",
-          images: {
-            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/hockey-cm-size.jpg?v=1753435754",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/hockey-in-size.jpg?v=1753663994",
-          },
+      },
+      {
+        label: "Hockey",
+        images: {
+          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/hockey-cm-size.jpg?v=1753435754",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/hockey-in-size.jpg?v=1753663994",
         },
-        {
-          label: "soccer",
-          images: {
-            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/soccer-cm-size.jpg?v=1753435754",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/soccer-in-size.jpg?v=1753663994",
-          },
+      },
+      {
+        label: "soccer",
+        images: {
+          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/soccer-cm-size.jpg?v=1753435754",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/soccer-in-size.jpg?v=1753663994",
         },
-        {
-          label: "Jacket",
-          images: {
-            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/jacket-cm-size.jpg?v=1753435754",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/jacket-in-size.jpg?v=1753664000",
-          },
+      },
+      {
+        label: "Jacket",
+        images: {
+          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/jacket-cm-size.jpg?v=1753435754",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/jacket-in-size.jpg?v=1753664000",
         },
-        {
-          label: "Waterproof Jacket",
-          images: {
-            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/waterproof-cm-size.jpg?v=1753435751",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/waterproof-in-size.jpg?v=1753663994",
-          },
+      },
+      {
+        label: "Waterproof Jacket",
+        images: {
+          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/waterproof-cm-size.jpg?v=1753435751",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/waterproof-in-size.jpg?v=1753663994",
         },
-        {
-          label: "T-Shirt",
-          images: {
-            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/t-shirt-cm-size.jpg?v=1753435754",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/T-shirt-in-size.jpg?v=1753663994",
-          },
+      },
+      {
+        label: "T-Shirt",
+        images: {
+          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/t-shirt-cm-size.jpg?v=1753435754",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/T-shirt-in-size.jpg?v=1753663994",
         },
-        {
-          label: "Basketball Shorts",
-          images: {
-            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-pants-cm-size.jpg?v=1753435754",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-short-in-size.jpg?v=1753663994",
-          },
+      },
+      {
+        label: "Basketball Shorts",
+        images: {
+          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-pants-cm-size.jpg?v=1753435754",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-short-in-size.jpg?v=1753663994",
         },
-        {
-          label: "Baseball Pants",
-          images: {
-            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-pant-cm-size.jpg?v=1753435754",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-pants-in-size.jpg?v=1753663994",
-          },
+      },
+      {
+        label: "Baseball Pants",
+        images: {
+          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-pant-cm-size.jpg?v=1753435754",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-pants-in-size.jpg?v=1753663994",
         },
-        {
-          label: "Pet",
-          images: {
-            CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/pet-cm-size.jpg?v=1753435753",
-            IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/pet-in-size.jpg?v=1753663994",
-          },
+      },
+      {
+        label: "Pet",
+        images: {
+          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/pet-cm-size.jpg?v=1753435753",
+          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/pet-in-size.jpg?v=1753663994",
         },
-        
-      ];
+      },
+    ];
 
-      const outerTabsContainer = document.getElementById("outer-tabs");
-      const outerPanelsContainer = document.getElementById("outer-tab-panels");
+    const outerTabsContainer = document.getElementById("outer-tabs");
+    const outerPanelsContainer = document.getElementById("outer-tab-panels");
 
-      tabData.forEach((tab, tabIndex) => {
-        // 创建 outer tab button
-        const outerBtn = document.createElement("button");
-        outerBtn.textContent = tab.label;
-        if (tabIndex === 0) outerBtn.classList.add("active");
-        outerTabsContainer.appendChild(outerBtn);
+    tabData.forEach((tab, tabIndex) => {
+      // 外层按钮
+      const outerBtn = document.createElement("button");
+      outerBtn.textContent = tab.label;
+      if (tabIndex === 0) outerBtn.classList.add("active");
+      outerTabsContainer.appendChild(outerBtn);
 
-        // 创建 outer panel
-        const outerPanel = document.createElement("div");
-        outerPanel.classList.add("tab-panel");
-        if (tabIndex === 0) outerPanel.classList.add("active");
+      // 外层面板
+      const outerPanel = document.createElement("div");
+      outerPanel.classList.add("tab-panel");
+      if (tabIndex === 0) outerPanel.classList.add("active");
 
-        // 内层 tab buttons
-        const innerBtnWrap = document.createElement("div");
-        innerBtnWrap.className = "inner-tab-buttons";
-        innerBtnWrap.style.flexDirection = "row-reverse";
+      // 内层按钮
+      const innerBtnWrap = document.createElement("div");
+      innerBtnWrap.className = "inner-tab-buttons";
+      innerBtnWrap.style.flexDirection = "row-reverse";
 
-        const units = ["CM", "IN"];
-        const innerPanels = [];
+      const units = ["CM", "IN"];
+      const innerPanels = [];
 
-        units.forEach((unit, idx) => {
-          const innerBtn = document.createElement("button");
-          innerBtn.className = "but-tab";
-          innerBtn.textContent = unit;
-          if (idx === 1) innerBtn.classList.add("active");
-          innerBtnWrap.appendChild(innerBtn);
+      units.forEach((unit) => {
+        if (!tab.images[unit]) return;
 
-          const innerPanel = document.createElement("div");
-          innerPanel.className = "inner-tab-panel";
-          if (idx === 1) innerPanel.classList.add("active");
-          const img = document.createElement("img");
-          img.src = tab.images[unit];
-          innerPanel.appendChild(img);
-          innerPanels.push(innerPanel);
+        const innerBtn = document.createElement("button");
+        innerBtn.className = "but-tab";
+        innerBtn.textContent = unit;
 
-          innerBtn.addEventListener("click", () => {
-            innerBtnWrap
-              .querySelectorAll("button")
-              .forEach((b) => b.classList.remove("active"));
-            innerPanels.forEach((p) => p.classList.remove("active"));
-            innerBtn.classList.add("active");
-            innerPanel.classList.add("active");
-          });
-        });
+        innerBtnWrap.appendChild(innerBtn);
 
-        outerPanel.appendChild(innerBtnWrap);
-        innerPanels.forEach((p) => outerPanel.appendChild(p));
-        outerPanelsContainer.appendChild(outerPanel);
+        const innerPanel = document.createElement("div");
+        innerPanel.className = "inner-tab-panel";
 
-        // 外层 tab 切换逻辑
-        outerBtn.addEventListener("click", () => {
-          outerTabsContainer
-            .querySelectorAll("button")
-            .forEach((b) => b.classList.remove("active"));
-          outerPanelsContainer
-            .querySelectorAll(".tab-panel")
-            .forEach((p) => p.classList.remove("active"));
-          outerBtn.classList.add("active");
-          outerPanel.classList.add("active");
+        const img = document.createElement("img");
+        img.src = tab.images[unit];
+        innerPanel.appendChild(img);
+        innerPanels.push({ unit, btn: innerBtn, panel: innerPanel });
+
+        innerBtn.addEventListener("click", () => {
+          innerBtnWrap.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
+          innerPanels.forEach((p) => p.panel.classList.remove("active"));
+          innerBtn.classList.add("active");
+          innerPanel.classList.add("active");
         });
       });
-    </script>
+
+      // 设置默认激活项 = IN > CM
+      let defaultUnit = tab.images["IN"] ? "IN" : (tab.images["CM"] ? "CM" : null);
+      if (defaultUnit) {
+        const target = innerPanels.find((p) => p.unit === defaultUnit);
+        if (target) {
+          target.btn.classList.add("active");
+          target.panel.classList.add("active");
+        }
+      }
+
+      if (innerPanels.length > 0) {
+        outerPanel.appendChild(innerBtnWrap);
+        innerPanels.forEach((p) => outerPanel.appendChild(p.panel));
+      }
+
+      outerPanelsContainer.appendChild(outerPanel);
+
+      // 外层切换
+      outerBtn.addEventListener("click", () => {
+        outerTabsContainer.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
+        outerPanelsContainer.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+        outerBtn.classList.add("active");
+        outerPanel.classList.add("active");
+      });
+    });
+  </script>
 </body>
 </html>
