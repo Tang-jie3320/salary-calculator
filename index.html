@@ -33,14 +33,8 @@
         border: 1px solid #000000;
       }
      .tab-buttons button {
-        max-width: 120px;
         height: 50px;
-        padding: 0 10px;
-        cursor: pointer;
-        border: none;
-        border-radius: 4px;
-        background-color: #fff;
-        border: 1px solid #000000;
+        padding: 0 14px;
       }
 
       button.active {
@@ -87,14 +81,14 @@
   <script>
     const tabData = [
       {
-        label: "Reversible Basketball",
+        label: "Reversible<br> Basketball",
         images: {
           CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-cm-size.jpg?v=1753435751",
           IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-in-size.jpg?v=1753663994",
         },
       },
       {
-        label: "Stitched Basketball",
+        label: "Stitched<br> Basketball",
         images: {
           CM: "",
           IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/stitched-basketball-in.png?v=1757381991",
@@ -108,7 +102,7 @@
         },
       },
       {
-        label: "Basketball Sequined Dress",
+        label: "Basketball<br> Sequined Dress",
         images: {
           CM: "",
           IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-sequined-dress-in.png?v=1757381991",
@@ -150,7 +144,7 @@
         },
       },
       {
-        label: "Waterproof Jacket",
+        label: "Waterproof<br> Jacket",
         images: {
           CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/waterproof-cm-size.jpg?v=1753435751",
           IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/waterproof-in-size.jpg?v=1753663994",
@@ -164,14 +158,14 @@
         },
       },
       {
-        label: "Basketball Shorts",
+        label: "Basketball<br> Shorts",
         images: {
           CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-pants-cm-size.jpg?v=1753435754",
           IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-short-in-size.jpg?v=1753663994",
         },
       },
       {
-        label: "Baseball Pants",
+        label: "Baseball<br> Pants",
         images: {
           CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-pant-cm-size.jpg?v=1753435754",
           IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-pants-in-size.jpg?v=1753663994",
@@ -192,7 +186,7 @@
     tabData.forEach((tab, tabIndex) => {
       // 外层按钮
       const outerBtn = document.createElement("button");
-      outerBtn.textContent = tab.label;
+      outerBtn.innerHTML = tab.label;
       if (tabIndex === 0) outerBtn.classList.add("active");
       outerTabsContainer.appendChild(outerBtn);
 
