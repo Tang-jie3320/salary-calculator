@@ -1,258 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <style>
-      body {
-        max-width: 1480px;
-        margin: 0 auto;
-      }
-
-      .tab-buttons {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 10px;
-      }
-      .inner-tab-buttons {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 10px;
-      }
-
-      button {
-        padding: 8px 14px;
-        cursor: pointer;
-        border: none;
-        border-radius: 4px;
-        background-color: #fff;
-        border: 1px solid #000000;
-      }
-     .tab-buttons button {
-        height: 50px;
-        padding: 0 14px;
-      }
-
-      button.active {
-        background: #000000;
-        color: #fff;
-      }
-
-      .tab-panel{
-        display: none;
-      }
-      .inner-tab-panel {
-        display: none;
-        max-width: 1000px;
-        margin: 0 auto;
-      }
-      .tab-panel.active,
-      .inner-tab-panel.active {
-        display: block;
-      }
-
-      .inner-tab-panel img {
-        max-width: 100%;
-      }
-
-      @media only screen and (max-width: 799px) {
-        .tab-buttons {
-          gap: 5px;
-          justify-content: flex-start;
-        }
-        .inner-tab-buttons {
-          gap: 5px;
-        }
-        button {
-          padding: 6px 7px;
-          font-size: 12px;
-        }
-      }
-    </style>
+<meta charset="UTF-8">
+<title>粒子爱心效果</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #0b0b1b;
+    overflow: hidden;
+    font-family: sans-serif;
+    color: #fff;
+  }
+  canvas { display: block; }
+  #love-text {
+    position: absolute;
+    top: 60%;
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+    color: #fff;
+  }
+  #love-text span {
+    color: #ff4b8b;
+    font-size: 18px;
+  }
+</style>
 </head>
 <body>
-  <div class="tab-buttons" id="outer-tabs"></div>
-  <div id="outer-tab-panels"></div>
+<canvas id="canvas"></canvas>
+<div id="love-text">
+    小兮 <span>❤️</span>
+</div>
+<script src="heart-particle.js"></script>
+<script>
+    const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
-  <script>
-    const tabData = [
-      {
-        label: "Reversible<br> Basketball",
-        images: {
-          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-cm-size.jpg?v=1753435751",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-in-size.jpg?v=1753663994",
-        },
-      },
-      {
-        label: "Stitched<br> Basketball",
-        images: {
-          CM: "",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/stitched-basketball-in.png?v=1757381991",
-        },
-      },
-      {
-        label: "Basketball",
-        images: {
-          CM: "",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-jersey-in.png?v=1757381990",
-        },
-      },
-      {
-        label: "Basketball<br> Sequined Dress",
-        images: {
-          CM: "",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-sequined-dress-in.png?v=1757381991",
-        },
-      },
-      {
-        label: "Baseball",
-        images: {
-          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-cm-size.jpg?v=1753435755",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-in-size.jpg?v=1753663994",
-        },
-      },
-      {
-        label: "football",
-        images: { 
-          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/football-cm-size.jpg?v=1753435754",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/football-in-size.jpg?v=1753663994",
-        },
-      },
-      {
-        label: "Hockey",
-        images: {
-          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/hockey-cm-size.jpg?v=1753435754",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/hockey-in-size.jpg?v=1753663994",
-        },
-      },
-      {
-        label: "soccer",
-        images: {
-          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/soccer-cm-size.jpg?v=1753435754",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/soccer-in-size.jpg?v=1753663994",
-        },
-      },
-      {
-        label: "Jacket",
-        images: {
-          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/jacket-cm-size.jpg?v=1753435754",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/jacket-in-size.jpg?v=1753664000",
-        },
-      },
-      {
-        label: "Waterproof<br> Jacket",
-        images: {
-          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/waterproof-cm-size.jpg?v=1753435751",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/waterproof-in-size.jpg?v=1753663994",
-        },
-      },
-      {
-        label: "T-Shirt",
-        images: {
-          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/t-shirt-cm-size.jpg?v=1753435754",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/T-shirt-in-size.jpg?v=1753663994",
-        },
-      },
-      {
-        label: "Basketball<br> Shorts",
-        images: {
-          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-pants-cm-size.jpg?v=1753435754",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/basketball-short-in-size.jpg?v=1753663994",
-        },
-      },
-      {
-        label: "Baseball<br> Pants",
-        images: {
-          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-pant-cm-size.jpg?v=1753435754",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/baseball-pants-in-size.jpg?v=1753663994",
-        },
-      },
-      {
-        label: "Pet",
-        images: {
-          CM: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/pet-cm-size.jpg?v=1753435753",
-          IN: "https://cdn.shopify.com/s/files/1/0564/8495/4307/files/pet-in-size.jpg?v=1753663994",
-        },
-      },
-    ];
+let w,h;
+function resize(){
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
 
-    const outerTabsContainer = document.getElementById("outer-tabs");
-    const outerPanelsContainer = document.getElementById("outer-tab-panels");
+// 爱心参数方程
+function heart(t){
+  return {
+    x: 16*Math.pow(Math.sin(t),3),
+    y: 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t)
+  }
+}
 
-    tabData.forEach((tab, tabIndex) => {
-      // 外层按钮
-      const outerBtn = document.createElement("button");
-      outerBtn.innerHTML = tab.label;
-      if (tabIndex === 0) outerBtn.classList.add("active");
-      outerTabsContainer.appendChild(outerBtn);
+// 粒子数组
+const particleCount = 2000;
+const particles = [];
 
-      // 外层面板
-      const outerPanel = document.createElement("div");
-      outerPanel.classList.add("tab-panel");
-      if (tabIndex === 0) outerPanel.classList.add("active");
+// 初始化粒子
+for(let i=0;i<particleCount;i++){
+  const t=Math.random()*Math.PI*2;
+  const edge=heart(t);
+  const k=Math.random()*0.8 + 0.2; // 控制粒子靠近中心或边缘
+  const layer = Math.random()<0.25?'outer':'inner';
+  particles.push({
+    x: edge.x*k,
+    y: edge.y*k,
+    baseX: edge.x*k,
+    baseY: edge.y*k,
+    size: layer==='outer'?Math.random()*2+1.5:Math.random()*1.5+0.5,
+    angle: Math.random()*Math.PI*2,
+    speed: Math.random()*0.015+0.003,
+    layer
+  });
+}
 
-      // 内层按钮
-      const innerBtnWrap = document.createElement("div");
-      innerBtnWrap.className = "inner-tab-buttons";
-      innerBtnWrap.style.flexDirection = "row-reverse";
+// 动画
+function animate(){
+  ctx.clearRect(0,0,w,h);
 
-      const units = ["CM", "IN"];
-      const innerPanels = [];
+  const scale = Math.min(w,h)/40;
+  const beat = 1 + Math.sin(Date.now()/400)*0.05;
 
-      units.forEach((unit) => {
-        if (!tab.images[unit]) return;
+  particles.forEach(p=>{
+    p.angle += p.speed;
+    const offsetX = Math.cos(p.angle)*0.3;
+    const offsetY = Math.sin(p.angle)*0.3;
 
-        const innerBtn = document.createElement("button");
-        innerBtn.className = "but-tab";
-        innerBtn.textContent = unit;
+    const x = w/2 + (p.baseX+offsetX)*scale*beat;
+    const y = h/2 - (p.baseY+offsetY)*scale*beat;
 
-        innerBtnWrap.appendChild(innerBtn);
+    ctx.beginPath();
+    ctx.arc(x,y,p.size,0,Math.PI*2);
 
-        const innerPanel = document.createElement("div");
-        innerPanel.className = "inner-tab-panel";
+    if(p.layer==='outer'){
+      ctx.fillStyle = 'rgba(255,255,255,'+(Math.random()*0.5+0.5)+')';
+      ctx.shadowColor='rgba(255,255,255,0.7)';
+      ctx.shadowBlur=4;
+    } else {
+      const hue = Math.floor((Math.atan2(p.baseY,p.baseX)*180/Math.PI+360)%360);
+      const lum = 50 + Math.sin(Date.now()/1000+p.angle)*15;
+      ctx.fillStyle = `hsl(${hue},80%,${lum}%)`;
+      ctx.shadowBlur=0;
+    }
+    ctx.fill();
+    ctx.shadowBlur=0;
+  });
 
-        const img = document.createElement("img");
-        img.src = tab.images[unit];
-        innerPanel.appendChild(img);
-        innerPanels.push({ unit, btn: innerBtn, panel: innerPanel });
+  requestAnimationFrame(animate);
+}
 
-        innerBtn.addEventListener("click", () => {
-          innerBtnWrap.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
-          innerPanels.forEach((p) => p.panel.classList.remove("active"));
-          innerBtn.classList.add("active");
-          innerPanel.classList.add("active");
-        });
-      });
+animate();
 
-      // 设置默认激活项 = IN > CM
-      let defaultUnit = tab.images["IN"] ? "IN" : (tab.images["CM"] ? "CM" : null);
-      if (defaultUnit) {
-        const target = innerPanels.find((p) => p.unit === defaultUnit);
-        if (target) {
-          target.btn.classList.add("active");
-          target.panel.classList.add("active");
-        }
-      }
-
-      if (innerPanels.length > 0) {
-        outerPanel.appendChild(innerBtnWrap);
-        innerPanels.forEach((p) => outerPanel.appendChild(p.panel));
-      }
-
-      outerPanelsContainer.appendChild(outerPanel);
-
-      // 外层切换
-      outerBtn.addEventListener("click", () => {
-        outerTabsContainer.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
-        outerPanelsContainer.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
-        outerBtn.classList.add("active");
-        outerPanel.classList.add("active");
-      });
-    });
-  </script>
+</script>
 </body>
 </html>
