@@ -2,147 +2,111 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>抽奖系统</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>发光文字上浮效果</title>
 <style>
-  body {
-    text-align: center;
-    font-family: Arial;
-    background: #f5f5f5;
-  }
+    /* 1. 基础页面设置与暗紫色背景 */
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden; /* 隐藏滚动条 */
+        background: linear-gradient(to bottom, #1a0b2e, #2d1b4e); /* 模拟原图的暗紫渐变背景 */
+        font-family: 'Microsoft YaHei', sans-serif;
+    }
 
-  .container {
-    position: relative;
-    width: 300px;
-    margin: 50px auto;
-  }
+    #container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
 
-  /* 转盘 */
-  .wheel {
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    border: 8px solid #333;
-    position: relative;
-    overflow: hidden;
-  }
+    /* 2. 漂浮元素的共有样式 */
+    .floating-item {
+        position: absolute;
+        bottom: -100px; /* 初始位置在屏幕最下方不可见处 */
+        color: rgba(255, 255, 255, 0.9);
+        /* 核心：利用 text-shadow 制作发光效果 */
+        text-shadow: 0 0 10px rgba(216, 150, 255, 0.8), 0 0 20px rgba(216, 150, 255, 0.5);
+        white-space: nowrap;
+        user-select: none;
+        pointer-events: none; /* 防止鼠标交互干扰 */
+        animation-name: floatUp;
+        animation-timing-function: linear; /* 匀速向上漂浮 */
+        animation-fill-mode: forwards;
+    }
 
-  .sector {
-    position: absolute;
-    width: 50%;
-    height: 50%;
-    transform-origin: 100% 100%;
-    text-align: center;
-    line-height: 150px;
-    font-weight: bold;
-    background: #ffcc00;
-  }
-
-  .sector:nth-child(2) { transform: rotate(60deg); background:#ff9999;}
-  .sector:nth-child(3) { transform: rotate(120deg); background:#99ccff;}
-  .sector:nth-child(4) { transform: rotate(180deg); background:#66ff99;}
-  .sector:nth-child(5) { transform: rotate(240deg); background:#ffcc99;}
-  .sector:nth-child(6) { transform: rotate(300deg); background:#cc99ff;}
-
-  /* 🎯 指针 */
-  .pointer {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 6px;
-    height: 140px;
-    background: red;
-    transform-origin: bottom center;
-    transform: translate(-50%, -100%) rotate(0deg);
-    transition: transform 4s ease-out;
-    border-radius: 3px;
-  }
-
-  /* 中心点 */
-  .center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    background: black;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-  }
-
-  button {
-    padding: 10px 30px;
-    font-size: 18px;
-    cursor: pointer;
-  }
-
-  /* 👇 解释权（低调角落） */
-  .copyright {
-    position: fixed;
-    bottom: 8px;
-    right: 12px;
-    font-size: 12px;
-    color: #999;
-    opacity: 0.6;
-  }
+    /* 3. 上浮动画关键帧 */
+    @keyframes floatUp {
+        0% {
+            transform: translateY(0);
+        }
+        100% {
+            transform: translateY(-120vh); /* 移动到屏幕最上方以外 */
+        }
+    }
 </style>
 </head>
 <body>
 
-<h1>🎁 最漂亮的小兮专属抽奖</h1>
-
-<div class="container">
-  <div class="wheel">
-    <div class="sector">10元</div>
-    <div class="sector">20元</div>
-    <div class="sector">谢谢参与</div>
-    <div class="sector">5元</div>
-    <div class="sector">20元</div>
-    <div class="sector">再来一次</div>
-  </div>
-
-  <div class="pointer" id="pointer"></div>
-  <div class="center"></div>
-</div>
-
-<button onclick="startLottery()">开始抽奖</button>
-
-<h2 id="result"></h2>
-
-<!-- 👇 低调解释权 -->
-<div class="copyright">
-  *本活动最终解释权归小唐所有
-</div>
+<div id="container"></div>
 
 <script>
-  let rotating = false;
+    const container = document.getElementById('container');
 
-  function startLottery() {
-    if (rotating) return;
-    rotating = true;
+    // 根据你的截图提取的文案素材库
+    const words = [
+        "泉州华图", "满勤全额退费", "盛大开课", 
+        "8天正价课", "数量资料", "攻克常识", 
+        "政治理论", "6月3号", "❤"
+    ];
 
-    const pointer = document.getElementById('pointer');
+    function createFloatingItem() {
+        const el = document.createElement('div');
+        el.classList.add('floating-item');
 
-    // 🎯 固定必中：20元（第2块）
-    const targetIndex = 2.5; // 从0开始，第2块就是1
+        // 1. 随机选取文案
+        const text = words[Math.floor(Math.random() * words.length)];
+        el.innerText = text;
 
-    const degPerItem = 360 / 6;
+        // 2. 随机生成各项属性，制造参差不齐的动态美感
+        const leftPos = Math.random() * 90; // X轴位置 (0% - 90%)
+        const fontSize = Math.random() * 40 + 16; // 字体大小 (16px - 56px)
+        const duration = Math.random() * 6 + 12; // 上浮耗时/速度 (6秒 - 12秒)
+        const opacity = Math.random() * 0.6 + 0.3; // 透明度 (0.3 - 0.9)
+        const blur = Math.random() * 4; // 模糊度 (0px - 4px)，制造远近景深效果
 
-    // 指针最终角度（指向中间）
-    const targetDeg = targetIndex * degPerItem + degPerItem / 2;
+        // 3. 将随机属性应用到元素上
+        el.style.left = `${leftPos}%`;
+        el.style.fontSize = `${fontSize}px`;
+        el.style.animationDuration = `${duration}s`;
+        el.style.opacity = opacity;
+        el.style.filter = `blur(${blur}px)`;
 
-    // 多转几圈
-    const rotateDeg = 360 * 5 + targetDeg;
+        // 特殊处理：如果是爱心，给它换个偏红/粉的发光颜色
+        if (text === "❤") {
+            el.style.color = "rgba(255, 105, 180, 0.8)";
+            el.style.textShadow = "0 0 15px rgba(255, 20, 147, 0.8)";
+            // 让爱心稍微大一点
+            el.style.fontSize = `${fontSize * 1.5}px`; 
+        }
 
-    pointer.style.transform =
-      `translate(-50%, -100%) rotate(${rotateDeg}deg)`;
+        container.appendChild(el);
 
-    setTimeout(() => {
-      document.getElementById('result').innerText =
-        "恭喜最最最可爱迷人漂亮的小兮中了 20 元！🎉 请找最喜欢的人领取！！！";
-      rotating = false;
-    }, 4000);
-  }
+        // 4. 性能优化：当元素动画结束（漂出屏幕外）时，将其从 DOM 中彻底移除
+        el.addEventListener('animationend', () => {
+            el.remove();
+        });
+    }
+
+    // 5. 设置定时器，不断生成新词（每 300 毫秒生成一个）
+    setInterval(createFloatingItem, 300);
+
+    // 页面加载时先立刻生成一批，避免一开始屏幕太空
+    for(let i=0; i<15; i++) {
+        setTimeout(createFloatingItem, i * 100);
+    }
 </script>
 
 </body>
